@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>THE LAST TIMELINE</title>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* ===================== CSS ===================== */
+:root{--black:#080808;--char:#151515;--dark:#242424;--red:#9F1D2C;--white:#E8E8E8;--steel:#8a929b;
+--mono:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace;--disp:'Oswald','Arial Narrow',Impact,sans-serif;--body:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}
+*{box-sizing:border-box;margin:0}
+html,body{height:100%}
+body{background:radial-gradient(ellipse at center,#1a1214,var(--black) 70%);color:var(--white);font-family:var(--body);display:flex;align-items:center;justify-content:center;overflow:hidden}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
+:focus-visible{outline:2px solid var(--white);outline-offset:2px}
+#phone{position:relative;width:410px;height:min(860px,96vh);background:var(--black);border:2px solid #2c2c2c;border-radius:42px;box-shadow:0 0 0 8px #000,0 30px 90px #000,0 0 120px rgba(159,29,44,.18);overflow:hidden;display:flex;flex-direction:column}
+@media(max-width:480px){body{display:block}#phone{width:100%;height:100dvh;border-radius:0;border:0;box-shadow:none}}
+#bar{display:flex;justify-content:space-between;align-items:center;padding:10px 20px 6px;font:12px var(--mono);z-index:40}
+#bar .r{display:flex;gap:8px;align-items:center}
+.ic{padding:2px 4px;font-size:14px;opacity:.8}.ic:hover{opacity:1;color:var(--red)}
+#prog{display:flex;gap:4px;padding:0 20px 4px;z-index:40}
+#prog i{flex:1;height:2px;background:var(--dark);transition:background .5s}#prog i.d{background:var(--red)}
+.scr,#pop{position:absolute;inset:44px 0 0;display:none;flex-direction:column;padding:18px 20px 22px;overflow-y:auto}
+.scr.on,#pop.on{display:flex;animation:in .6s ease}
+#pop{z-index:25;background:rgba(5,5,5,.97)}
+@keyframes in{from{opacity:0;transform:scale(1.02)}to{opacity:1;transform:none}}
+#grain,#scan,#glitch{position:absolute;inset:0;pointer-events:none;z-index:30}
+#grain{opacity:.07;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.9'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E");animation:gr .6s steps(3) infinite}
+@keyframes gr{50%{transform:translate(-3%,2%)}100%{transform:translate(2%,-3%)}}
+#scan{background:repeating-linear-gradient(transparent 0 2px,rgba(0,0,0,.25) 2px 3px)}
+#glitch{opacity:0;background:linear-gradient(90deg,rgba(159,29,44,.4),transparent 30%,rgba(232,232,232,.15) 60%,transparent);mix-blend-mode:screen}
+#glitch.g{animation:gl .5s steps(6)}
+@keyframes gl{0%,100%{opacity:0}20%{opacity:1;transform:translateX(-8px) skewX(4deg)}40%{opacity:.6;transform:translateX(10px)}60%{opacity:1;transform:translateY(-6px) skewX(-5deg)}80%{opacity:.5;transform:translateX(-4px)}}
+.shake{animation:sh .5s}@keyframes sh{20%{transform:translateX(-5px)}40%{transform:translateX(5px)}60%{transform:translateX(-3px)}80%{transform:translateX(3px)}}
+.steel{color:var(--steel)}.red{color:var(--red)}.sm{font:11px var(--mono)}
+.cur::after{content:'▌';color:var(--red);animation:bl 1s steps(1) infinite;margin-left:2px}@keyframes bl{50%{opacity:0}}
+.btn{display:block;width:100%;padding:14px;margin-top:10px;border:1px solid var(--red);background:var(--red);font:700 15px var(--disp);letter-spacing:.16em;text-align:center;transition:.2s}
+.btn:hover{background:#b8243a}.btn.ghost{background:transparent;border-color:#444;color:var(--steel)}.btn.ghost:hover{border-color:var(--white);color:var(--white)}
+h1,h2,h3{font-family:var(--disp);font-weight:700;letter-spacing:.06em;line-height:1.1}
+.hide{display:none!important}.fade{animation:in .6s ease both}
+#setup{justify-content:center;background:radial-gradient(circle at 50% 20%,#2a1015,#080808 70%)}
+.lang{display:flex;gap:8px}.lang button{flex:1;padding:11px;border:1px solid #444;font:700 14px var(--mono);color:var(--steel)}
+.lang button[aria-pressed=true]{border-color:var(--red);background:var(--red);color:var(--white)}
+label{display:block;font:12px var(--mono);letter-spacing:.06em;margin:16px 0 6px;color:var(--steel)}
+input[type=text]{width:100%;background:var(--char);border:1px solid #333;color:var(--white);padding:12px;font:16px var(--body);border-radius:0}
+input:focus{border-color:var(--red)}
+input[type=file]{width:100%;font:13px var(--mono);color:var(--steel)}
+#pthumb{width:84px;height:84px;object-fit:cover;border:1px solid var(--red);margin-top:8px}
+.err{color:#ff5c6c;font:12px var(--mono);margin-top:4px}.bad{border-color:#ff5c6c!important}
+.note{font:11px/1.5 var(--mono);color:var(--steel);margin-top:6px}
+#lock{background:linear-gradient(180deg,rgba(0,0,0,.2),rgba(0,0,0,.85)),var(--wall,none),linear-gradient(#0b0f1a,#1b0d12 60%,#000);background-size:cover;background-position:center;align-items:center;text-align:center;padding-top:40px}
+#clock{font:500 84px var(--disp);letter-spacing:.04em}
+#skyline{margin-top:auto;width:100%;height:120px;opacity:.55}
+.notif{width:100%;text-align:left;background:rgba(36,36,36,.92);border:1px solid #3a3a3a;border-left:3px solid var(--red);border-radius:16px;padding:14px;margin:26px 0 16px;transform:translateY(-30px);opacity:0;transition:.5s}
+.notif.show{transform:none;opacity:1}.notif p{font-size:14px;margin-top:6px}
+.hd{display:flex;align-items:center;gap:12px;padding-bottom:12px;border-bottom:1px solid var(--dark)}
+.av{width:40px;height:40px;border-radius:50%;background:var(--dark);display:grid;place-items:center;font:700 18px var(--mono);border:1px solid var(--red)}
+#msgs,#dlg,#calllog{flex:1;display:flex;flex-direction:column;gap:10px;padding:16px 0;overflow-y:auto}
+.b{max-width:85%;padding:10px 14px;border-radius:16px 16px 16px 4px;background:var(--dark);font-size:15px;line-height:1.45;animation:in .35s}
+.typing{display:flex;gap:4px;padding:12px 14px}.typing i{width:7px;height:7px;border-radius:50%;background:var(--steel);animation:ty 1s infinite}.typing i:nth-child(2){animation-delay:.2s}.typing i:nth-child(3){animation-delay:.4s}@keyframes ty{50%{transform:translateY(-5px);opacity:.4}}
+.banner{background:var(--red);padding:10px 14px;font:700 12px var(--mono);letter-spacing:.08em;border-radius:10px}
+#call{align-items:center;text-align:center;background:radial-gradient(circle at 50% 30%,#2a1015,#080808 70%);padding-top:50px}
+.pulse{width:110px;height:110px;border-radius:50%;margin:30px auto 20px;background:var(--dark);border:2px solid var(--red);display:grid;place-items:center;font:700 40px var(--disp);position:relative}
+.ring .pulse::before,.ring .pulse::after{content:'';position:absolute;inset:-2px;border:2px solid var(--red);border-radius:50%;animation:pu 1.6s infinite}.ring .pulse::after{animation-delay:.8s}
+@keyframes pu{to{transform:scale(1.8);opacity:0}}
+.ring #callui{animation:sh .7s infinite}
+.cbtns{display:flex;justify-content:space-around;width:100%;margin-top:auto;padding-bottom:20px}
+.cb{display:flex;flex-direction:column;align-items:center;gap:8px;font:12px var(--mono);letter-spacing:.1em}
+.cb span{width:70px;height:70px;border-radius:50%;display:grid;place-items:center;font-size:28px;transition:.2s}
+.cb:hover span{transform:scale(1.08)}.ans span{background:#2f7a4a}.dec span{background:var(--red)}
+.pane{width:100%;text-align:left;flex:1;display:flex;flex-direction:column}
+.line{font-size:16px;line-height:1.5;padding:8px 0 8px 14px;border-left:2px solid var(--red);animation:in .4s}
+.stamp{display:inline-block;border:3px solid var(--red);color:var(--red);font:700 22px var(--disp);letter-spacing:.2em;padding:4px 14px;transform:rotate(-6deg)}
+.file{border:1px solid #333;background:var(--char);padding:14px;margin:12px 0;font:13px/1.9 var(--mono)}
+.file b,#more b{color:var(--steel);font-weight:400}.crit{color:var(--red);animation:bl 1.2s steps(1) infinite}
+.photo{height:190px;margin:4px 0;border:1px solid #333;background:var(--ph,none),repeating-linear-gradient(45deg,#1a1a1a 0 8px,#151515 8px 16px);background-size:cover;background-position:center top;display:grid;place-items:center;text-align:center;font:12px var(--mono);color:var(--steel);position:relative}
+.photo::before{content:'';width:70px;height:90px;border-radius:50% 50% 8px 8px;background:#0a0a0a;border:1px solid var(--red);position:absolute;top:30px;box-shadow:0 60px 0 -10px #0a0a0a}
+.photo.has::before,.photo.has span{display:none}.photo span{margin-top:120px}
+.rb{background:var(--white);color:transparent;user-select:none;padding:0 4px}
+.brief p{margin:10px 0;font-size:15px;line-height:1.55}
+.glow{animation:fg 3s infinite}@keyframes fg{0%,90%,100%{text-shadow:none}93%{text-shadow:3px 0 var(--red),-3px 0 #fff}96%{text-shadow:-3px 0 var(--red)}}
+#more .row{border-top:1px solid #333;padding:10px 0;font:13px/1.6 var(--mono)}
+.big{font-size:36px;margin:10px 0}.mid{font-size:24px}
+.center{text-align:center;justify-content:center;align-items:center}
+.love{font-style:italic;font-size:17px;line-height:1.6;border-left:2px solid var(--red);padding-left:14px;margin:14px 0;text-align:left}
+#card{width:100%;height:auto;border:1px solid var(--red);margin-top:6px;background:#000}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01s!important;animation-iteration-count:1!important;transition-duration:.01s!important}}
+</style>
+</head>
+<body>
+<!-- ===================== HTML ===================== -->
+<main id="phone" aria-live="polite">
+  <div id="bar">
+    <span id="stime">00:00</span>
+    <span class="r">
+      <button class="ic" id="bFast" aria-label="Skip animations" title="Skip animations">⏩</button>
+      <button class="ic" id="bRestart" aria-label="Restart" title="Restart">↺</button>
+      <span class="sm">🔒 ▂▄▆ ▮▮▮▯</span>
+    </span>
+  </div>
+
+  <!-- 0 SETUP -->
+  <section class="scr" id="setup">
+    <div class="sm red">● SECURE LINE · 03:17 JST</div>
+    <h1 class="glow" style="font-size:40px;margin:8px 0">THE LAST TIMELINE</h1>
+    <p class="steel" style="font-size:14px;line-height:1.5" data-i="tag"></p>
+    <p style="font-size:14px;margin-top:14px" data-i="intro"></p>
+    <label data-i="lLang"></label>
+    <div class="lang"><button id="lgId" aria-pressed="true">BAHASA INDONESIA</button><button id="lgEn" aria-pressed="false">ENGLISH</button></div>
+    <label for="fName" data-i="lName"></label>
+    <input type="text" id="fName" maxlength="24" autocomplete="off"><div class="err" id="eName"></div>
+    <label for="fPhoto" data-i="lPhoto"></label>
+    <input type="file" id="fPhoto" accept="image/*"><img id="pthumb" class="hide" alt=""><div class="err" id="ePhoto"></div>
+    <p class="note" data-i="nPhoto"></p>
+    <button class="btn" id="start" data-i="bStart"></button>
+  </section>
+
+  <!-- 1 LOCK -->
+  <section class="scr" id="lock">
+    <div class="sm steel" id="date" style="margin-top:10px"></div>
+    <div id="clock">00:00</div>
+    <div class="notif" id="notif" role="alert">
+      <div class="sm red" data-i="unk"></div>
+      <p><b data-i="n1"></b></p>
+      <p data-i="n2"></p>
+      <p class="steel" data-i="n3"></p>
+    </div>
+    <button class="btn hide" id="openMsg" data-i="bOpen"></button>
+    <svg id="skyline" viewBox="0 0 400 120" preserveAspectRatio="none" aria-hidden="true"><path fill="#050505" d="M0 120V70h20V50h25v30h15V30h22v50h18V60h28V20h18v60h20V55h30V35h24v45h16V65h30V45h22v75z"/><g fill="#9F1D2C" opacity=".8"><rect x="68" y="40" width="3" height="3"/><rect x="190" y="30" width="3" height="3"/><rect x="262" y="48" width="3" height="3"/></g></svg>
+  </section>
+
+  <!-- 2 CHAT -->
+  <section class="scr" id="chat">
+    <div class="hd"><div class="av">?</div><div><div style="font-weight:700" data-i="unkName"></div><div class="sm steel" data-i="enc"></div></div></div>
+    <div id="msgs"></div>
+  </section>
+
+  <!-- 3 CALL -->
+  <section class="scr" id="call">
+    <div id="callui" style="width:100%;display:flex;flex-direction:column;align-items:center;flex:1">
+      <div class="sm red" style="letter-spacing:.25em" data-i="inc"></div>
+      <div class="pulse">T</div>
+      <h2 class="mid">TAKEMICHI HANAGAKI</h2>
+      <div class="sm steel" style="margin-top:8px;line-height:1.7" data-i="loc"></div>
+      <div class="cbtns">
+        <button class="cb dec" id="decline"><span>✆</span><i data-i="bDec" style="font-style:normal"></i></button>
+        <button class="cb ans" id="answer"><span>✆</span><i data-i="bAns" style="font-style:normal"></i></button>
+      </div>
+    </div>
+    <div class="pane hide" id="talk">
+      <div class="sm red"><span data-i="conn"></span> · <span id="ctimer">00:00</span></div>
+      <h3 style="margin:6px 0">TAKEMICHI HANAGAKI</h3>
+      <div id="dlg"></div>
+      <button class="btn hide" id="listen" data-i="bListen"></button>
+    </div>
+    <div class="pane hide" id="missed">
+      <div class="sm red" data-i="miss"></div>
+      <h3 style="margin:6px 0">TAKEMICHI HANAGAKI</h3>
+      <div id="calllog"></div>
+      <button class="btn hide" id="callback" data-i="bCallback"></button>
+      <button class="btn ghost hide" id="readmsg" data-i="bRead"></button>
+    </div>
+  </section>
+
+  <!-- 4 DOSSIER -->
+  <section class="scr" id="dossier">
+    <div style="display:flex;justify-content:space-between;align-items:center"><div class="sm red" data-i="dTag"></div></div>
+    <h2 class="glow" style="margin-top:10px;font-size:20px" data-i="dTitle"></h2>
+    <div class="sm steel" style="margin-top:6px" data-i="dMeta"></div>
+    <div class="photo" id="photo"><span data-i="dPh"></span></div>
+    <div class="file" data-i="dFile"></div>
+    <div class="brief" id="brief"></div>
+    <button class="btn hide" id="fullrep" data-i="bFull"></button>
+    <div id="more" class="hide fade">
+      <div class="row" data-i="dR1"></div><div class="row" data-i="dR2"></div><div class="row" data-i="dR3"></div>
+      <button class="btn" id="tobrief" data-i="bToBrief"></button>
+    </div>
+  </section>
+
+  <!-- 5 MISSION -->
+  <section class="scr" id="mission">
+    <div class="sm red" data-i="mStat"></div>
+    <h1 class="big glow">OPERATION:<br>SAVE MIKEY</h1>
+    <div class="file" data-i="mFile"></div>
+    <div class="love" id="love"></div>
+    <div id="choices" class="hide">
+      <button class="btn" id="accept" data-i="bAccept"></button>
+      <button class="btn ghost" id="refuse" data-i="bRefuse"></button>
+    </div>
+    <div id="walk" class="hide fade">
+      <p class="love" data-i="walk"></p>
+      <button class="btn ghost" id="back" data-i="bBack"></button>
+      <button class="btn" id="accept2" data-i="bAccept"></button>
+    </div>
+  </section>
+
+  <!-- 6 REVEAL -->
+  <section class="scr center" id="reveal">
+    <div class="stamp" id="rstamp" style="font-size:30px">CLASSIFIED</div>
+    <div id="rtext" class="hide" style="width:100%">
+      <h1 class="big" style="color:var(--red)" data-i="rH1"></h1>
+      <h2 class="mid" data-i="rH2"></h2>
+      <p class="sm steel" style="margin:12px 0" data-i="rS"></p>
+      <div class="love" data-i="rL"></div>
+      <button class="btn" id="see" data-i="bSee"></button>
+    </div>
+  </section>
+
+  <!-- POPUP: MISSION ACCEPTED -->
+  <section id="pop" role="dialog" aria-modal="true" aria-label="Mission accepted">
+    <h2 class="mid red" data-i="pS" style="margin-top:8px"></h2>
+    <div class="love" data-i="pL"></div>
+    <div class="sm steel" data-i="pCard"></div>
+    <canvas id="card" width="1080" height="1350" aria-label="Invitation card"></canvas>
+    <button class="btn" id="dl" data-i="bDl"></button>
+    <button class="btn ghost" id="home" data-i="bHome"></button>
+  </section>
+
+  <div id="grain"></div><div id="scan"></div><div id="glitch"></div>
+</main>
+
+<script>
+/* =====================================================================
+   KONFIGURASI / CONFIGURATION: UBAH BAGIAN INI SAJA. Jangan hapus tanda kutip "".
+   ===================================================================== */
+const CONFIG = {
+  COMMUNITY_NAME: "Truinity Of Ruint",  // 1. Nama komunitas (tampil di kartu undangan)
+  SOCIAL_URL:     "",                   // 2. Link sosmed, contoh "https://instagram.com/akunmu" (opsional)
+  GROUP_URL:      "",                   // 3. Link grup/Discord/WhatsApp. Tombol "Gabung Komunitas" membuka ini.
+  WALLPAPER_URL:  "",                   // 4. Opsional: URL wallpaper lock screen
+  MIKEY_IMAGE_URL:"",                   // 5. Opsional: URL gambar Mikey di dossier
+  VOICE_URL:      "assets/takemichi.mp3", // 6. Suara Takemichi saat telepon dijawab ("" = tanpa suara)
+  VOICE_LENGTH:   15.1,                 //    Durasi suara dalam detik (untuk menentukan kapan tombol muncul)
+  SOUND_ENABLED:  true,                 // 7. false = tanpa suara
+  RINGTONE_VOLUME:0.08                  //    0.0 sampai 0.3
+};
+
+/* =====================================================================
+   TEKS DUA BAHASA / TWO-LANGUAGE TEXT. {n} = nama pengunjung. Edit teks di sini.
+   ===================================================================== */
+const I18N = {
+id: {
+ tag:"Satu kesempatan terakhir. Satu timeline terakhir. Bawa Mikey pulang.",
+ intro:"Ada garis waktu tertentu yang layak diperjuangkan.",
+ lLang:"BAHASA", lName:"NAMA ATAU KODE NAMA *", lPhoto:"FOTO (OPSIONAL)",
+ bStart:"MASUK KE CERITA", eName:"Isi namamu (minimal 2 karakter).", eBig:"Ukuran foto maksimal 10 MB.", eBad:"Foto tidak bisa dibaca, kartu akan memakai siluet.",
+ unk:"● NOMOR TIDAK DIKENAL · sekarang", n1:"“Kamu sudah bangun, {n}?”", n2:"“Sesuatu yang buruk sedang terjadi di Tokyo.”", n3:"“Kalau kamu masih punya kesempatan untuk mengubah masa depan, apakah kamu mau mengambilnya?”", bOpen:"BUKA PESAN",
+ unkName:"NOMOR TIDAK DIKENAL", enc:"● terenkripsi · mengetik…", banner:"⚠ PANGGILAN MASUK · TAKEMICHI HANAGAKI",
+ chat:["Dengarkan baik-baik, {n}. Waktu kita tidak banyak.","Toman sudah dibubarkan 12 tahun lalu. Semua orang menemukan jalannya masing-masing.","Tapi ada satu orang yang tidak pernah muncul lagi. Mikey.","Aku tahu ini terdengar mustahil, tapi aku butuh seseorang yang mau membantu."],
+ inc:"● PANGGILAN MASUK", loc:"Lokasi Tidak Diketahui<br>🔒 Koneksi Terenkripsi", bDec:"TOLAK", bAns:"JAWAB", conn:"● TERHUBUNG",
+ talk:[[1.15,"Aku gak tau apakah ini nyata!"],[3.3,"Tapi...."],[4.5,"Wajah Mikey-kun yang hancur...."],[9.3,"Aku harus menyelamatkan Mikey-kun...."]],
+ bListen:"AKU MENDENGARKAN", miss:"● PANGGILAN TIDAK TERJAWAB · 1 PESAN BARU", decl:["Tolong. Aku tidak akan meneleponmu kalau ada jalan lain.","Waktunya hampir habis."], bCallback:"TELEPON BALIK", bRead:"BACA PESAN",
+ dTag:"⚠ RAHASIA", dTitle:"LAPORAN INTELIJEN RAHASIA", dMeta:"CASE ID: M-001 &nbsp;|&nbsp; LEVEL KEAMANAN: TERBATAS", dPh:"[ FOTO DISENSOR ]<br>tambahkan gambar di CONFIG",
+ dFile:"<b>TARGET:</b> MANJIRO SANO<br><b>KODE NAMA:</b> MIKEY<br><b>STATUS:</b> <span class='crit'>KRITIS</span><br><b>TUJUAN MISI:</b> HENTIKAN DARK IMPLUSE<br><b>TUJUAN AKHIR:</b> SELAMATKAN MANJIRO SANO",
+ brief:["Tokyo sedang di tepi kekacauan.","Bonten menguasai kota lewat kejahatan, dan masa depan makin tidak stabil.","Di pusatnya berdiri Manjiro Sano, orang yang harus kita bawa pulang dari Dark Impulse yang menyelimutinya.","Operasi ini butuh orang-orang yang mau berdiri bersama, saat semuanya mulai runtuh."],
+ bFull:"BUKA LAPORAN LENGKAP",
+ dR1:"<b>LAPORAN:</b> Situasi saat ini Tokyo menunjukkan peningkatan ancaman yang terkait dengan aktivitas Bonten.",
+ dR2:"<b>ORGANISASI:</b> Bonten, sindikat kriminal Tokyo · pemimpin: <span class='rb'>██████████</span>",
+ dR3:"<b>RENTANG WAKTU:</b> 12 tahun setelah Toman dibubarkan. Mikey tidak terlihat sejak 10 tahun lalu.", bToBrief:"LANJUT KE BRIEFING",
+ mStat:"● STATUS MISI: AKTIF", mFile:"<b>TUJUAN UTAMA:</b><br>Bawa Mikey pulang.<br><b>TUJUAN KEDUA:</b><br>Temukan sekutu dan perkuat tim.<br><b>TINGKAT ANCAMAN:</b> <span class='crit'>KRITIS</span>",
+ love:["Kamu tidak harus jadi yang terkuat di Tokyo.","Kamu hanya perlu mau berdiri di sisi kami.","Karena kali ini, tidak ada yang ditinggalkan."],
+ bAccept:"TERIMA MISI", bRefuse:"BUKAN SEKARANG", walk:"“Meski kamu pergi sekarang, panggilan itu mungkin akan datang lagi.”", bBack:"KEMBALI KE BRIEFING",
+ rStamp:"SURAT UNDANGAN", rH1:"KAMU TERPILIH.", rH2:"MASA DEPAN BUTUH SEKUTU BARU.", rS:"SELAMAT DATANG DI OPERASI INI, {n}.",
+ rL:"“Setiap timeline butuh orang yang menolak menyerah.”<br>“Berdirilah bersama tim, dan jadi bagian dari ceritanya.”<br>“Misi ini dimulai darimu.”", bSee:"LIHAT UNDANGANKU",
+ pStamp:"MISI DITERIMA", pH:"{n}, KAMU IKUT DALAM MISI.", pS:"SELAMAT DATANG DI THE LAST TIMELINE.",
+ pL:"“Keputusanmu bisa mengubah segalanya.”<br>“Tetap dekat. Misi dimulai sekarang.”<br>“Bersama-sama, kita bawa Mikey pulang.”",
+ pCard:"KARTU UNDANGAN PERSONALMU", bDl:"UNDUH KARTU UNDANGAN", bJoin:"GABUNG KOMUNITAS", bHome:"KEMBALI KE LAYAR UTAMA", eJoin:"Link grup belum diatur. Isi GROUP_URL di CONFIG.",
+ cSub:"SURAT REKRUTMEN RAHASIA", cDear:"Kepada {n},", cBody:"Ada orang-orang yang layak diselamatkan, sejauh apa pun mereka telah jatuh. {c} mengundangmu berdiri bersama kami dalam misi menjangkau Manjiro Sano, memutus lingkaran kegelapan, dan membawa Mikey kembali kepada orang-orang yang tidak pernah berhenti menunggunya.", cTag:"Satu kesempatan terakhir. Satu timeline terakhir. Bawa Mikey pulang.", cFut:"Masa depan bukan takdir yang tak bisa diubah. Mari kita tulis ulang bersama.", cQ:"MAUKAH KAMU MENERIMA MISI INI?", cFoot:"FAN-MADE · TERINSPIRASI TOKYO REVENGERS", loc2:"id-ID"
+},
+en: {
+ tag:"One last chance. One last timeline. Bring Mikey home.",
+ intro:"Some timelines are worth fighting for.",
+ lLang:"LANGUAGE", lName:"NAME OR CODENAME *", lPhoto:"PHOTO (OPTIONAL)",
+ bStart:"ENTER THE STORY", eName:"Enter your name (at least 2 characters).", eBig:"Photo must be under 10 MB.", eBad:"The photo couldn't be read, so the card will use a silhouette.",
+ unk:"● UNKNOWN NUMBER · now", n1:"“Are you awake, {n}?”", n2:"“Something terrible is about to happen in Tokyo.”", n3:"“If you still have a chance to change the future, would you take it?”", bOpen:"OPEN MESSAGE",
+ unkName:"UNKNOWN NUMBER", enc:"● encrypted · typing…", banner:"⚠ INCOMING CALL · TAKEMICHI HANAGAKI",
+ chat:["Listen carefully, {n}. We don't have much time.","Toman was disbanded 12 years ago. Everyone found their own path.","But one person never showed up again. Mikey.","I know this sounds impossible, but I need someone who is willing to help."],
+ inc:"● INCOMING CALL", loc:"Unknown Location<br>🔒 Encrypted Connection", bDec:"DECLINE", bAns:"ANSWER", conn:"● CONNECTED",
+ talk:[[1.15,"I don't know if this is real!"],[3.3,"But...."],[4.5,"Mikey-kun's shattered face...."],[9.3,"I have to save Mikey-kun...."]],
+ bListen:"I'M LISTENING", miss:"● MISSED CALL · 1 NEW MESSAGE", decl:["Please. I wouldn't be calling you if there were another way.","He's running out of time."], bCallback:"CALL BACK", bRead:"READ MESSAGE",
+ dTag:"⚠ CONFIDENTIAL", dTitle:"CLASSIFIED INTELLIGENCE REPORT", dMeta:"CASE ID: M-001 &nbsp;|&nbsp; SECURITY LEVEL: RESTRICTED", dPh:"[ PHOTO REDACTED ]<br>add an image in CONFIG",
+ dFile:"<b>TARGET:</b> MANJIRO SANO<br><b>CODENAME:</b> MIKEY<br><b>STATUS:</b> <span class='crit'>CRITICAL</span><br><b>MISSION OBJECTIVE:</b> STOP DARK IMPULSE<br><b>FINAL GOAL:</b> SAVE MANJIRO SANO",
+ brief:["Tokyo is on the edge of chaos.","Bonten controls the city through crime, and the future grows more unstable.","At the center stands Manjiro Sano, the one we must bring home from the Dark Impulse wrapped around him.","This operation needs people who will stand together when everything begins to fall apart."],
+ bFull:"ACCESS FULL REPORT",
+ dR1:"<b>REPORT:</b> The current situation in Tokyo indicates an escalating threat linked to the activities of Bonten.",
+ dR2:"<b>ORGANIZATION:</b> Bonten, a Tokyo crime syndicate · leader: <span class='rb'>██████████</span>",
+ dR3:"<b>TIMELINE:</b> 12 years after Toman was disbanded. Mikey has not been seen in 10 years.", bToBrief:"PROCEED TO BRIEFING",
+ mStat:"● MISSION STATUS: ACTIVE", mFile:"<b>PRIMARY OBJECTIVE:</b><br>Bring Mikey home.<br><b>SECONDARY OBJECTIVE:</b><br>Find allies and strengthen the team.<br><b>THREAT LEVEL:</b> <span class='crit'>CRITICAL</span>",
+ love:["You don't have to be the strongest person in Tokyo.","You just have to be willing to stand beside us.","Because this time, nobody gets left behind."],
+ bAccept:"ACCEPT THE MISSION", bRefuse:"NOT THIS TIME", walk:"“Even if you walk away now, the call may come again.”", bBack:"RETURN TO BRIEFING",
+ rStamp:"INVITATION", rH1:"YOU HAVE BEEN SELECTED.", rH2:"THE FUTURE NEEDS NEW ALLIES.", rS:"WELCOME TO THE OPERATION, {n}.",
+ rL:"“Every timeline needs people who refuse to give up.”<br>“Stand with the team and become part of the story.”<br>“The mission starts with you.”", bSee:"SEE MY INVITATION",
+ pStamp:"MISSION ACCEPTED", pH:"{n}, YOU'RE IN THE MISSION.", pS:"WELCOME TO THE LAST TIMELINE.",
+ pL:"“Your decision may change everything.”<br>“Stay close. The mission begins now.”<br>“Together, we'll bring Mikey home.”",
+ pCard:"YOUR PERSONAL INVITATION", bDl:"DOWNLOAD INVITATION", bJoin:"JOIN THE COMMUNITY", bHome:"RETURN TO MAIN SCREEN", eJoin:"No group link set yet. Fill in GROUP_URL in CONFIG.",
+ cSub:"CLASSIFIED RECRUITMENT NOTICE", cDear:"Dear {n},", cBody:"Some people are worth saving, no matter how far they've fallen. {c} invites you to stand with us in our mission to reach Manjiro Sano, break the cycle of darkness, and bring Mikey back to the people who have never stopped waiting for him.", cTag:"One last chance. One last timeline. Bring Mikey home.", cFut:"The future is not set in stone. Let's rewrite it together.", cQ:"WILL YOU ACCEPT THE MISSION?", cFoot:"FAN-MADE · INSPIRED BY TOKYO REVENGERS", loc2:"en-US"
+}};
+
+/* =====================================================================
+   STATE + HELPER
+   ===================================================================== */
+const $ = id => document.getElementById(id);
+const STEPS = ["setup","lock","chat","call","dossier","mission","reveal","pop"];
+let lang = "id", pname = "", photoImg = null, photoURL = null;
+let cur = null, run = 0, busy = false, fast = matchMedia("(prefers-reduced-motion: reduce)").matches;
+let voice = null, muted = false, actx = null, ringT = null, callTimer = null;
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const T = k => I18N[lang][k];
+const raw = s => s.replace(/\{n\}/g, pname || "…");
+const sleep = ms => new Promise(r => setTimeout(r, fast ? Math.min(ms, 30) : ms));
+const alive = id => id === run;
+const show = (...e) => e.forEach(x => x.classList.remove("hide"));
+const hide = (...e) => e.forEach(x => x.classList.add("hide"));
+function applyLang() {
+  document.documentElement.lang = lang;
+  document.querySelectorAll("[data-i]").forEach(e => { const v = T(e.dataset.i); if (v !== undefined) e.innerHTML = v.replace(/\{n\}/g, esc(pname || "…")); });
+  $("lgId").setAttribute("aria-pressed", lang === "id"); $("lgEn").setAttribute("aria-pressed", lang === "en"); tick();
+}
+function flash() { const g = $("glitch"); if (fast) return; g.classList.remove("g"); void g.offsetWidth; g.classList.add("g"); }
+async function type(el, text, id, speed = 28) {
+  if (fast) { el.textContent = text; return; }
+  el.textContent = ""; el.classList.add("cur");
+  for (const ch of text) { if (!alive(id)) return; el.textContent += ch; await sleep(speed); }
+  el.classList.remove("cur");
+}
+function once(btn, fn) { btn.addEventListener("click", () => { if (busy) return; fn(); }); } // anti klik ganda
+function go(next, glitch = true) { // satu-satunya cara pindah layar
+  if (busy) return; busy = true; run++; stopRing(); stopVoice(); $("pop").classList.remove("on");
+  if (glitch) flash();
+  setTimeout(() => {
+    document.querySelectorAll(".scr").forEach(s => s.classList.remove("on"));
+    $(next).classList.add("on"); $(next).scrollTop = 0; cur = next;
+    busy = false; ENTER[next] && ENTER[next](run);
+  }, fast || !glitch ? 0 : 280);
+}
+
+/* ---------- Suara (aktif hanya setelah pengunjung klik) ---------- */
+function ensureAudio() { if (!actx) try { actx = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) {} if (actx && actx.state === "suspended") actx.resume(); }
+function beep(f, d) {
+  if (muted || !actx || !CONFIG.SOUND_ENABLED) return;
+  const o = actx.createOscillator(), g = actx.createGain(); o.type = "square"; o.frequency.value = f; g.gain.value = CONFIG.RINGTONE_VOLUME;
+  g.gain.exponentialRampToValueAtTime(0.0001, actx.currentTime + d); o.connect(g); g.connect(actx.destination); o.start(); o.stop(actx.currentTime + d);
+}
+function startRing() {
+  clearInterval(ringT); const pat = () => { beep(880, .18); setTimeout(() => beep(660, .18), 220); setTimeout(() => beep(880, .18), 600); setTimeout(() => beep(660, .18), 820); };
+  pat(); ringT = setInterval(pat, 2200); if (navigator.vibrate && !fast) navigator.vibrate([300, 200, 300]);
+}
+function stopVoice() { if (voice) { voice.pause(); voice = null; } }
+function stopRing() { clearInterval(ringT); ringT = null; $("call").classList.remove("ring"); }
+function tick() {
+  const d = new Date(), t = d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: false });
+  $("clock").textContent = t; $("stime").textContent = t;
+  $("date").textContent = d.toLocaleDateString(T("loc2"), { weekday: "long", day: "numeric", month: "long" }).toUpperCase() + " · TOKYO 03:17 JST";
+}
+setInterval(tick, 10000);
+
+/* =====================================================================
+   LOGIKA TIAP LAYAR
+   ===================================================================== */
+const ENTER = {
+  async lock(id) {
+    $("notif").classList.remove("show"); hide($("openMsg")); await sleep(1800); if (!alive(id)) return;
+    $("notif").classList.add("show", "shake"); beep(1000, .15); if (navigator.vibrate && !fast) navigator.vibrate(200);
+    await sleep(700); if (!alive(id)) return; $("notif").classList.remove("shake"); show($("openMsg"));
+  },
+  async chat(id) {
+    const box = $("msgs"); box.innerHTML = ""; await sleep(900);
+    for (const m0 of T("chat")) {
+      const m = raw(m0); if (!alive(id)) return;
+      const t = document.createElement("div"); t.className = "b typing"; t.innerHTML = "<i></i><i></i><i></i>"; box.appendChild(t); box.scrollTop = 1e5;
+      await sleep(900 + m.length * 22); if (!alive(id)) return;
+      t.className = "b"; t.textContent = m; beep(1200, .08); box.scrollTop = 1e5; await sleep(700);
+    }
+    if (!alive(id)) return;
+    const ban = document.createElement("div"); ban.className = "banner shake"; ban.textContent = T("banner"); box.appendChild(ban); box.scrollTop = 1e5;
+    await sleep(1400); if (alive(id)) go("call");
+  },
+  call() { resetCall(); },
+  async dossier(id) {
+    const b = $("brief"); b.innerHTML = ""; hide($("fullrep"), $("more"));
+    for (const t of T("brief")) { if (!alive(id)) return; const p = document.createElement("p"); b.appendChild(p); await type(p, t, id, 14); await sleep(300); }
+    if (alive(id)) show($("fullrep"));
+  },
+  async mission(id) {
+    hide($("choices"), $("walk")); $("love").style.display = "";
+    const L = $("love"); L.innerHTML = ""; const lines = T("love"), els = lines.map(() => { const p = document.createElement("p"); p.style.margin = "6px 0"; L.appendChild(p); return p; });
+    for (let i = 0; i < lines.length; i++) { if (!alive(id)) return; await type(els[i], lines[i], id, 22); await sleep(350); }
+    if (alive(id)) show($("choices"));
+  },
+  async reveal(id) {
+    hide($("rtext")); const s = $("rstamp"); s.style.display = ""; s.textContent = "CLASSIFIED";
+    await sleep(1100); if (!alive(id)) return;
+    s.classList.add("shake"); await sleep(500); if (!alive(id)) return; s.textContent = T("rStamp"); s.classList.remove("shake");
+    await sleep(900); if (!alive(id)) return;
+    flash(); s.style.display = "none"; show($("rtext")); $("rtext").classList.add("fade");
+    await new Promise(r => setTimeout(r, 4500)); // popup muncul otomatis setelah beberapa detik
+    if (alive(id) && !busy) openPop();
+  }
+};
+
+/* ---------- Telepon ---------- */
+function resetCall() { clearInterval(callTimer); show($("callui")); hide($("talk"), $("missed")); $("call").classList.add("ring"); startRing(); }
+once($("answer"), async () => {
+  const id = ++run; stopRing(); stopVoice(); ensureAudio(); hide($("callui")); show($("talk")); $("dlg").innerHTML = ""; hide($("listen"));
+  const lines = T("talk"), END = CONFIG.VOICE_LENGTH; let ended = Promise.resolve();
+  if (!fast && CONFIG.SOUND_ENABLED && CONFIG.VOICE_URL) {
+    voice = new Audio(CONFIG.VOICE_URL); voice.muted = muted;
+    ended = new Promise(r => { voice.onended = r; voice.onerror = r; });
+    voice.play().catch(() => {});
+  }
+  let sec = 0; clearInterval(callTimer); callTimer = setInterval(() => { sec++; $("ctimer").textContent = String(Math.floor(sec / 60)).padStart(2, "0") + ":" + String(sec % 60).padStart(2, "0"); }, 1000);
+  const t0 = performance.now();
+  for (let i = 0; i < lines.length; i++) {
+    const at = lines[i][0], txt = lines[i][1], next = lines[i + 1] ? lines[i + 1][0] : END;
+    if (!fast) await new Promise(r => setTimeout(r, Math.max(0, at * 1000 - (performance.now() - t0)))); // ikuti waktu suara
+    if (!alive(id)) return;
+    const p = document.createElement("div"); p.className = "line"; $("dlg").appendChild(p);
+    await type(p, "“" + raw(txt) + "”", id, Math.max(14, Math.min(45, (next - at) * 650 / txt.length))); $("dlg").scrollTop = 1e5;
+  }
+  if (!fast) await Promise.race([ended, new Promise(r => setTimeout(r, Math.max(0, END * 1000 - (performance.now() - t0)) + 500))]);
+  if (alive(id)) show($("listen"));
+});
+once($("listen"), () => { clearInterval(callTimer); go("dossier"); });
+once($("decline"), async () => {
+  const id = ++run; stopRing(); clearInterval(callTimer); hide($("callui")); show($("missed")); $("calllog").innerHTML = ""; hide($("callback"), $("readmsg"));
+  await sleep(600);
+  for (const t of T("decl")) { if (!alive(id)) return; const b = document.createElement("div"); b.className = "b"; $("calllog").appendChild(b); await type(b, t, id, 24); await sleep(600); }
+  if (alive(id)) show($("callback"), $("readmsg"));
+});
+once($("callback"), resetCall);
+once($("readmsg"), () => go("dossier"));
+
+/* ---------- Tombol alur ---------- */
+once($("openMsg"), () => { ensureAudio(); go("chat"); });
+once($("fullrep"), () => { hide($("fullrep")); show($("more")); $("more").scrollIntoView({ behavior: fast ? "auto" : "smooth" }); });
+once($("tobrief"), () => go("mission"));
+once($("accept"), () => go("reveal"));
+once($("accept2"), () => go("reveal"));
+once($("refuse"), () => { hide($("choices")); $("love").style.display = "none"; show($("walk")); });
+once($("back"), () => { hide($("walk")); $("love").style.display = ""; show($("choices")); });
+once($("see"), () => openPop());
+once($("home"), () => restart());
+/* ---------- Layar awal: nama, bahasa, foto ---------- */
+$("lgId").addEventListener("click", () => { lang = "id"; pname = $("fName").value.trim(); applyLang(); });
+$("lgEn").addEventListener("click", () => { lang = "en"; pname = $("fName").value.trim(); applyLang(); });
+$("fPhoto").addEventListener("change", async () => {
+  const f = $("fPhoto").files[0]; photoImg = null; hide($("pthumb")); $("ePhoto").textContent = "";
+  if (photoURL) { URL.revokeObjectURL(photoURL); photoURL = null; }
+  if (!f) return;
+  if (f.size > 10 * 1048576) { $("ePhoto").textContent = T("eBig"); return; }
+  try { photoImg = await createImageBitmap(f); } catch (e1) {
+    try { photoImg = await new Promise((ok, no) => { const r = new FileReader(); r.onload = () => { const im = new Image(); im.onload = () => ok(im); im.onerror = no; im.src = r.result; }; r.onerror = no; r.readAsDataURL(f); }); }
+    catch (e2) { photoImg = null; }
+  }
+  if (photoImg) { photoURL = URL.createObjectURL(f); $("pthumb").src = photoURL; show($("pthumb")); } else $("ePhoto").textContent = T("eBad");
+});
+once($("start"), () => {
+  const n = $("fName").value.trim();
+  if (n.length < 2) { $("eName").textContent = T("eName"); $("fName").classList.add("bad"); $("fName").focus(); return; }
+  $("eName").textContent = ""; $("fName").classList.remove("bad");
+  pname = n; applyLang(); ensureAudio(); go("lock");
+});
+$("fName").addEventListener("keydown", e => { if (e.key === "Enter") $("start").click(); });
+
+/* ---------- Popup misi diterima + kartu undangan ---------- */
+function openPop() {
+  if (busy) return; run++; applyLang(); $("pop").classList.add("on"); $("pop").scrollTop = 0; flash(); drawCard();
+}
+function wrap(ctx, text, x, y, maxW, lh) {
+  let line = ""; for (const w of text.split(" ")) {
+    const t = line ? line + " " + w : w;
+    if (ctx.measureText(t).width > maxW && line) { ctx.fillText(line, x, y); line = w; y += lh; } else line = t;
+  } ctx.fillText(line, x, y); return y;
+}
+async function drawCard() {
+  try { await document.fonts.load("700 80px Oswald"); await document.fonts.load("400 28px 'JetBrains Mono'"); } catch (e) {}
+  const c = $("card"), x = c.getContext("2d"), W = 1080, H = 1350, D = "Oswald,Impact,sans-serif", M = "'JetBrains Mono',monospace";
+  x.textAlign = "center"; x.filter = "none"; x.fillStyle = "#080808"; x.fillRect(0, 0, W, H);
+  const g = x.createRadialGradient(W / 2, 480, 80, W / 2, 480, 900); g.addColorStop(0, "rgba(159,29,44,.35)"); g.addColorStop(1, "rgba(8,8,8,0)"); x.fillStyle = g; x.fillRect(0, 0, W, H);
+  x.strokeStyle = "#9F1D2C"; x.lineWidth = 4; x.strokeRect(36, 36, W - 72, H - 72); x.lineWidth = 1; x.strokeRect(52, 52, W - 104, H - 104);
+  const L = 110, B = "system-ui,-apple-system,'Segoe UI',Roboto,sans-serif", C = CONFIG.COMMUNITY_NAME;
+  // Judul + subjudul (tengah)
+  let ts = 96; x.font = "700 " + ts + "px " + D; while (x.measureText(C.toUpperCase()).width > W - 200 && ts > 40) { ts -= 4; x.font = "700 " + ts + "px " + D; }
+  x.textAlign = "center"; x.fillStyle = "#E8E8E8"; x.fillText(C.toUpperCase(), W / 2, 205);
+  x.fillStyle = "#9F1D2C"; x.font = "700 30px " + M; x.fillText(T("cSub"), W / 2, 262);
+  // Sapaan (kiri)
+  x.textAlign = "left"; x.fillStyle = "#E8E8E8"; x.font = "400 38px " + B; x.fillText(T("cDear").replace("{n}", pname || "…"), L, 380);
+  // Foto (kanan)
+  const px = 670, py = 430, pw = 300, ph = 420;
+  x.save(); x.beginPath(); x.rect(px, py, pw, ph); x.clip();
+  if (photoImg) {
+    const s = Math.max(pw / photoImg.width, ph / photoImg.height), w = photoImg.width * s, h = photoImg.height * s;
+    try { x.filter = "grayscale(.45) contrast(1.1)"; } catch (e) {} x.drawImage(photoImg, px + (pw - w) / 2, py + (ph - h) / 2, w, h); x.filter = "none";
+  } else {
+    x.fillStyle = "#151515"; x.fillRect(px, py, pw, ph); x.fillStyle = "#0a0a0a"; x.beginPath(); x.arc(px + pw / 2, py + 190, 78, 0, 7); x.fill(); x.beginPath(); x.ellipse(px + pw / 2, py + ph, 170, 190, 0, 0, 7); x.fill();
+  }
+  x.fillStyle = "rgba(159,29,44,.18)"; x.fillRect(px, py, pw, ph); x.restore();
+  x.strokeStyle = "#9F1D2C"; x.lineWidth = 6; x.strokeRect(px, py, pw, ph);
+  // Paragraf (kiri, di samping foto)
+  x.fillStyle = "#E8E8E8"; x.font = "400 28px " + B; const yb = wrap(x, T("cBody").replace("{c}", C), L, 455, 520, 40);
+  // Tagline, kalimat penutup, pertanyaan
+  let y = Math.max(yb, py + ph) + 70;
+  x.fillStyle = "#9F1D2C"; x.font = "700 33px " + D; y = wrap(x, T("cTag").toUpperCase(), L, y, W - 2 * L, 42);
+  x.fillStyle = "#E8E8E8"; x.font = "400 28px " + B; y = wrap(x, T("cFut"), L, y + 56, W - 2 * L, 40);
+  let qs = 54; x.font = "700 " + qs + "px " + D; while (x.measureText(T("cQ")).width > W - 2 * L && qs > 30) { qs -= 2; x.font = "700 " + qs + "px " + D; }
+  x.fillStyle = "#E8E8E8"; x.fillText(T("cQ"), L, y + 80);
+  x.fillStyle = "#9F1D2C"; x.fillRect(L, y + 100, 120, 5);
+  x.textAlign = "center";
+  x.fillStyle = "#8a929b"; x.font = "400 22px " + M; x.fillText(T("cFoot"), W / 2, H - 78);
+}
+once($("dl"), () => {
+  $("card").toBlob(b => {
+    if (!b) return; const a = document.createElement("a"); a.href = URL.createObjectURL(b);
+    a.download = "invitation-" + (pname || "operative").toLowerCase().replace(/[^a-z0-9]+/g, "-") + ".png"; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+  }, "image/png");
+});
+
+/* ---------- Kontrol atas ---------- */
+function restart() { run++; busy = false; stopRing(); stopVoice(); clearInterval(callTimer); go("setup", false); }
+$("bRestart").addEventListener("click", restart);
+$("bFast").addEventListener("click", () => { fast = !fast; $("bFast").style.color = fast ? "var(--red)" : ""; $("bFast").setAttribute("aria-pressed", fast); });
+/* ---------- Mulai ---------- */
+if (CONFIG.WALLPAPER_URL) $("lock").style.setProperty("--wall", "url('" + CONFIG.WALLPAPER_URL + "')");
+if (CONFIG.MIKEY_IMAGE_URL) { $("photo").style.setProperty("--ph", "url('" + CONFIG.MIKEY_IMAGE_URL + "')"); $("photo").classList.add("has"); }
+applyLang(); go("setup", false);
+</script>
+</body>
+</html>
